@@ -3,7 +3,7 @@ util.AddNetworkString("c_playtime_send")
 
 local function c_playtime_init(ply)
   local playtime = 0
-  corequery("SELECT * FROM playtime WHERE steamid = '"..ply:SteamID64().."' ", function(data)
+  corequery("SELECT * FROM playtime WHERE steamid = "..ply:SteamID64().."", function(data)
 		if data[1] != nil then
 			ply.playtime = data[1].time
 		else
@@ -18,7 +18,7 @@ local function c_playtime_count()
   for k,v in pairs(player.GetAll()) do
     if v:IsPlayer() then
       v.playtime = v.playtime + 60
-      net.Start()
+      net.Start("c_playtime_send")
       net.WriteFloat(v.playtime)
       net.Send(v)
     end
@@ -55,7 +55,7 @@ function meta:SetPlaytime(time)
 end
 
 function meta:UpdatePlaytime()
-  if IsValid(self) && self:IsPlayer() then
-    corequery("UPDATE playtime SET time = "..self.playtime.." WHERE steamid = '"..self:SteamID64().."' ")
+  if self:IsPlayer() then
+    corequery("UPDATE playtime SET time = "..self.playtime.." WHERE steamid = "..self:SteamID64().."")
   end
 end
